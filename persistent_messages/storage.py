@@ -1,3 +1,4 @@
+from django.utils import timezone
 from persistent_messages.models import Message
 from persistent_messages.constants import PERSISTENT_MESSAGE_LEVELS
 from django.contrib import messages 
@@ -29,7 +30,7 @@ class PersistentMessageStorage(FallbackStorage):
         self.is_anonymous = not get_user(self.request).is_authenticated()
 
     def _message_queryset(self, exclude_unread=True):
-        qs = Message.objects.filter(user=get_user(self.request)).filter(Q(expires=None) | Q(expires__gt=datetime.datetime.now()))
+        qs = Message.objects.filter(user=get_user(self.request)).filter(Q(expires=None) | Q(expires__gt=datetime.datetime.now(timezone.UTC())))
         if exclude_unread:
             qs = qs.exclude(read=True)
         return qs
